@@ -98,7 +98,7 @@ def get_horton_basis_home() -> directory:
     """ Get Path of Horton Basis """
 
     # Get horton home directory
-    horton_env_name='HORTON_HOME'
+    horton_env_name='RUN_HORTON_HOME'
     if not horton_env_name in os.environ.keys():
         raise Exception(f"Could not find environment variable {horton_env_name} in environement")
     horton_home=os.environ[horton_env_name]
