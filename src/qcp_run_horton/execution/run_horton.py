@@ -1,5 +1,5 @@
 import numpy as np
-import os, sys , glob, re, json ; sys.path.insert(1, os.environ['SCR'])
+import os, sys , glob, re, json 
 
 #; sys.path.insert(1,'/home/bruno/opt/lisa_cheng_test/docs/notebooks')
 #from setup import prepare_argument_dict, prepare_grid_and_dens, print_results
@@ -235,8 +235,6 @@ def print_basis(basis, format='CamCASP'):
         return basis
 #
 def save_moments(wpart, output_nam=None, method=None):
-    sys.path.insert(1,os.environ['PY_MODULES'])
-    #print(mol.atcharges, mol.atcoords)
     nuclear_charges=wpart.numbers
     coordinates=wpart.coordinates
 
