@@ -1,0 +1,4 @@
+conda_env_file: run_horton_env.yaml
+dependencies:
+  - QCP_GLOBAL_UTILS_HOME
+  - QCP_OBJECTS_HOME

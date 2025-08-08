@@ -1,8 +1,5 @@
 import numpy as np
 import os, sys , glob, re, json ; sys.path.insert(1, os.environ['SCR'])
-import modules.mod_read_files as m_rf
-import modules.mod_objects as m_obj
-import modules.mod_utils as m_util
 
 #; sys.path.insert(1,'/home/bruno/opt/lisa_cheng_test/docs/notebooks')
 #from setup import prepare_argument_dict, prepare_grid_and_dens, print_results
@@ -19,16 +16,14 @@ import json
 
 from .util import stamp 
 
-try:
-    import modules.mod_data as m_dt
-    Z_to_atomtype=m_dt.Z_to_atomtype
-    atomtype_to_Z=m_dt.atomtype_to_Z
-    get_nshells_for_Z=m_dt.get_nshells_for_Z
-except Exception as e:
-    raise Exception(f"Likely there is something wrong with the mod_data module:\n{e}")
-valid_methods=['MBIS','LISA']
+from qcp_run_horton.util.import_helper import * 
+from qcp_run_horton.parse.controller import horton_wpart_controller
 
-# SETUPS
+from qcp_global_utils.encoding_and_conversion.encoding import nuclear_charge_to_element_symbol, element_symbol_to_nuclear_charge, get_nshells_for_nuclear_charge
+
+valid_methods=['mbis','lisa']
+
+# setups
 #
 def prepare_grid_and_dens(filename, rad_grid_dens=200, ang_grid_dens='insane'):
     """Prepare molecular grid and density."""
@@ -99,12 +94,11 @@ def save_solution(partition, output_file=None):
     coefficient_raw= partition.history_propars[-1]
     coordinates=partition.coordinates
     atomic_numbers=partition.numbers
-    if isinstance(partition, MBISWPart):
-        pass
+
+    if isinstance(partition, MBISWPart): pass
     elif isinstance(partition, LinearISAWPart):
         basis=print_basis(partition.bs_helper, format='json')
-    else:
-        raise Exception()
+    else: raise Exception()
 
     def get_lisa_func_info( basis, atomic_numbers, coefficient_list ):
         cur_index=0
@@ -137,7 +131,7 @@ def save_solution(partition, output_file=None):
         coefficients, exponents = [ coefficient_list[i::2] for i in [0,1] ]
 
         for Z in atomic_numbers:
-            nshell=get_nshells_for_Z(Z)
+            nshell=get_nshells_for_nuclear_charge(Z)
             new_index=cur_index+nshell
 
             exponent_list+=[ exponents[cur_index:new_index].tolist() ]
@@ -169,23 +163,26 @@ def save_solution(partition, output_file=None):
     coordinates=coordinates
     shape_functions, atom_types=[ [] for i in range(2) ]
     for i,z in enumerate(atomic_numbers):
-        atom_type=Z_to_atomtype[z]
+        atom_type=nuclear_charge_to_element_symbol(z)
         at={
-            'exponent_scales': exponent_list[i],
-            'exponent_orders': orders_list[i],
-            'coefficients': coefficient_list[i],
-            'normalizations': normalization_list[i]
+            'exponent_scales': [ [x] for x in exponent_list[i] ],
+            'exponent_orders': [ [x] for x in orders_list[i] ],
+            'normalizations':  [ [x] for x in normalization_list[i]],
+            'coefficients':    coefficient_list[i],
         }
 
-        shape_functions.append(at)
+        rad_bas=radial_atomic_basis(**at)
+        shape_functions.append(rad_bas)
         atom_types.append(atom_type)
     dic={
-        'shape_functions':shape_functions,
-        'coordinates':coordinates,
+        'basis_expansions':shape_functions,
+        'centers':coordinates,
         'atom_types':atom_types,
     }
-    molecular_radial_basis=m_obj.molecular_radial_basis(dic)
-    outout_file=molecular_radial_basis.to_json(output_file=output_file)
+    sol=molecular_radial_basis(**dic)
+    with open(output_file, 'w') as wr:
+        json.dump(sol.model_dump(), wr)
+    #output_file=sol.to_json(output_file=output_file)
     return output_file
 #
 def print_basis(basis, format='CamCASP'):
@@ -198,7 +195,9 @@ def print_basis(basis, format='CamCASP'):
         raise Exception(f"Unkown type: {type(basis)}")
     # Define atom names and check if mapping works
     for key in exponents.keys():
-        if key not in Z_to_atomtype.keys():
+        try:
+            nuclear_charge_to_element_symbol(key)
+        except:
             raise Exception(f"What to do with Z=\'{key}\'")\
 
 
@@ -212,7 +211,7 @@ def print_basis(basis, format='CamCASP'):
             os.mkdir(dir_name)
         from datetime import datetime
         for key in exponents.keys():
-            at_ty=Z_to_atomtype[key]
+            at_ty=nuclear_charge_to_element_symbol(key)
             file_name=os.path.join(dir_name, at_ty)
 
 
@@ -237,7 +236,6 @@ def print_basis(basis, format='CamCASP'):
 #
 def save_moments(wpart, output_nam=None, method=None):
     sys.path.insert(1,os.environ['PY_MODULES'])
-    import mod_read_files as m_rf
     #print(mol.atcharges, mol.atcoords)
     nuclear_charges=wpart.numbers
     coordinates=wpart.coordinates
@@ -254,18 +252,20 @@ def save_moments(wpart, output_nam=None, method=None):
         output_nam=f"{method}_moments.mom"
     np.savetxt(f"{method}_charges.txt", wpart['charges'])
     np.savetxt(f"{method}_moments.txt", wpart['cartesian_multipoles'])
-    m_rf.custom_mtp_mom_file(output_nam,nuclear_charges,wpart['pure_multipoles'],coords=coordinates, type=method)
+
+    from qcp_objects.objects.properties import custom_mtp_mom_file
+
+    custom_mtp_mom_file(output_nam,nuclear_charges,wpart['pure_multipoles'],coords=coordinates, type=method)
     return output_nam
 #
-def save_part(wpart, dic=None, save_objs='all'):
+def save_part(wpart, cntrl:horton_wpart_controller, save_objs='all'):
     # Write the result to a file
-    if type(dic)==type(None):
-        raise Exception()
-    method=dic['METHOD']
-    mom_nam=dic['MOMENTS_NAME']
-    his_nam=dic['KLD_HISTORY_NAME']
-    sol_nam=dic['SOLUTION_NAME']
+    method=cntrl.method
+    mom_nam=cntrl.output.moments_file
+    his_nam=cntrl.output.kld_history_file
+    sol_nam=cntrl.output.solution_file
     #pickle.dump(wpart, open('partition_dump.pkl','wb'))
+
 
     # Save information
     result_di={'files':{}}
@@ -289,10 +289,9 @@ def save_part(wpart, dic=None, save_objs='all'):
         json.dump(result_di, wr)
 
 ### EXECUTION
-def exc_partition(mol, grid, rho, method=None, basis=None, solver=None):
+@val_call
+def exc_partition(mol, grid, rho, method:str, basis=None, solver=None):
     """Local LISA by solving convex optimization problem."""
-    if type(method)==type(None):
-        raise Exception(f"Provide a method to this function!")
 
     kwargs=prepare_argument_dict(mol, grid, rho)
     if method.lower() in ['mbis']:
@@ -300,8 +299,11 @@ def exc_partition(mol, grid, rho, method=None, basis=None, solver=None):
     elif method.lower() in ['lisa']:
         if type(solver)==type(None):
             raise Exception(f"Provide solver as option")
+        
+        from qcp_run_horton.basis.load_basis import load_basis
         if not basis is None:
-            kwargs['basis_func']=basis
+            basis_func=load_basis(basis)
+            kwargs['basis_func']=basis_func
         kwargs['solver']=solver
         part = LinearISAWPart(**kwargs)
     else:
@@ -312,7 +314,7 @@ def exc_partition(mol, grid, rho, method=None, basis=None, solver=None):
     part.do_moments()
     return part
 
-def run_horton(inp_dic, wfn_fi, method, basis, solver=None, ang_grid_dens=None):
+def run_horton(controller, wfn_fi, method, basis, solver=None, ang_grid_dens=None):
     """ Run horton for the provided input """
     # Setup the calculation
     mol, grid, rho = prepare_grid_and_dens(wfn_fi, ang_grid_dens=ang_grid_dens)
@@ -320,7 +322,7 @@ def run_horton(inp_dic, wfn_fi, method, basis, solver=None, ang_grid_dens=None):
     # Execute Partitioning and save results
     partition=exc_partition(mol, grid, rho, method=method, basis=basis, solver=solver)
     # Save multipoles, soltion and KLD
-    save_part(partition, inp_dic , save_objs='all')
+    save_part(partition, controller , save_objs='all')
 
     
 

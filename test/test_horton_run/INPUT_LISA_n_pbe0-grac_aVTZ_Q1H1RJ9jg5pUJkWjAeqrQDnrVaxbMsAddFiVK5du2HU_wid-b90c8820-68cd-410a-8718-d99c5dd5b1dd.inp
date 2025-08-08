@@ -1,7 +1,0 @@
-METHOD               LISA
-WAVEFUNCTION         OPT_1119_09292415073D_pubchem.fchk.xz
-ANG_GRID_DENS        insane
-MOMENTS_NAME         LISA_n_pbe0-grac_aVTZ_Q1H1RJ9jg5pUJkWjAeqrQDnrVaxbMsAddFiVK5du2HU_wid-b90c8820-68cd-410a-8718-d99c5dd5b1dd.mom
-SOLUTION_NAME        LISA_n_pbe0-grac_aVTZ_Q1H1RJ9jg5pUJkWjAeqrQDnrVaxbMsAddFiVK5du2HU_wid-b90c8820-68cd-410a-8718-d99c5dd5b1dd_solution.json
-KLD_HISTORY_NAME     LISA_n_pbe0-grac_aVTZ_Q1H1RJ9jg5pUJkWjAeqrQDnrVaxbMsAddFiVK5du2HU_wid-b90c8820-68cd-410a-8718-d99c5dd5b1dd_kld-his.json
-BASIS                set2-11-avqz

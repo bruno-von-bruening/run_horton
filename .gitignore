@@ -1,6 +1,8 @@
 __pychache__
 build/
-basis/*/
+back/
 dist/
+basis/*/
 **.egg-info/
-test/
+tests/basic_tests/*
+!tests/basic_tests/*/*.sh
