@@ -57,7 +57,15 @@ from qcp_global_utils.environment.file_handling import temporary_file
 from qcp_run_horton.execution.util import process_mp2_and_cc_file
 
 
-def main(inp_fi:file|None=None, method:str|None=None, basis:str|None=None, wfn_file:file|None=None, execute=True):
+def main(
+        inp_fi:file|None=None, 
+        method:str|None=None, 
+        basis:str|None=None, 
+        rad_grid_dens: int|None = None, # Atomic grid density
+        ang_grid_dens: str|None = None, # Atomic grid density
+        wfn_file:file|None=None, 
+        execute:bool=True
+):
     """ Takes dictionary with all information about the run 
     1. Process and check the information
     2. Run horton
@@ -71,6 +79,8 @@ def main(inp_fi:file|None=None, method:str|None=None, basis:str|None=None, wfn_f
         if not method is None: kwargs.update(dict(method=method))
         if not basis is None: kwargs.update(dict(basis=basis))
         if not wfn_file is None: kwargs.update(dict(wfn_file=wfn_file))
+        if not rad_grid_dens is None: kwargs.update(dict(rad_grid_dens=rad_grid_dens))
+        if not ang_grid_dens is None: kwargs.update(dict(ang_grid_dens=ang_grid_dens))
         dummy_controller=horton_wpart_controller(**horton_wpart_controller.example(**kwargs))
         inp_fi=dummy_controller.write()
         print(f"Wrote input file to {inp_fi}")

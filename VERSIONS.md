@@ -20,3 +20,7 @@ Introduced ```util/``` folder for package. Should allow for better overview of k
 ## Formal Changes
 Changed convention of ISA solution (allowing contracted gaussian) and regularised ISA solution to its corresponding ```qcp_objects``` class.
 This has been largely done in the previous commit, but probably this was just a bug fix.
+
+
+# v0.01.04 added ang grid and rad grid options
+Added options for angular and radial grid in parser.

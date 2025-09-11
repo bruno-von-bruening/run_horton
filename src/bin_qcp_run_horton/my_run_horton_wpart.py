@@ -6,6 +6,8 @@ import os, sys , glob, re, json
 from qcp_run_horton.execution.main import main
 
 exc_flag='exc'
+rad_grid_flag='rad_grid_dens'
+ang_grid_flag='ang_grid_dens'
 
 def parser():
     # ARGPARSE
@@ -22,6 +24,8 @@ def parser():
     addar('--method', help=f"Partitioning method", default=None, choices=['MBIS','LISA'])
     addar('--basis', help=f"Partitioning method", default=None)
     addar('--wfn', type=str, help=f"Wave Function file")
+    addar(f"--{rad_grid_flag}", type=int, help=f"Radial Atomic Grid Density keyword")
+    addar(f"--{ang_grid_flag}", type=str, help=f"Angular Grid Density keyword")
     addar(f"--{exc_flag}", action='store_true', help=f"Execute the calculation")
     
     # Parse the args
@@ -34,9 +38,13 @@ def parser():
     if not basis is None:
         if basis.lower()=='none': basis=None
     execute=get_args(exc_flag)
+    rad_grid_dens=get_args(rad_grid_flag)
+    ang_grid_dens=get_args(ang_grid_flag)
     wfn_file=args.wfn
 
-    main(inp_fi, method=method, basis=basis, wfn_file=wfn_file, execute=execute)
+    main(inp_fi, method=method, basis=basis,
+        rad_grid_dens=rad_grid_dens, ang_grid_dens=ang_grid_dens,
+         wfn_file=wfn_file, execute=execute)
     if not execute:
         print(f"Execution flag was not activated. (activate with --{exc_flag})")
 

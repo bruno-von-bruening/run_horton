@@ -1,6 +1,6 @@
 [project]
 name = "qcp_run_horton"
-version = "0.1.03"
+version = "0.1.04"
 description = ''
 readme = "README.md"
 requires-python = ">=3.8"

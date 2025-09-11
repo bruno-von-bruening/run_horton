@@ -6,3 +6,4 @@ basis/*/
 **.egg-info/
 tests/basic_tests/*
 !tests/basic_tests/*/*.sh
+tests/open-shell/*
