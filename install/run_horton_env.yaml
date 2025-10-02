@@ -19,3 +19,6 @@ dependencies:
      - build
      - pyyaml
      - rdkit
+     - git+ssh://git@github.com/bruno-von-bruening/qcp_global_utils.git
+     - git+ssh://git@github.com/bruno-von-bruening/qcp_objects.git
+

@@ -24,3 +24,7 @@ This has been largely done in the previous commit, but probably this was just a 
 
 # v0.01.04 added ang grid and rad grid options
 Added options for angular and radial grid in parser.
+
+# v0.01.05 bug fixes
+Adopted change in controller model according to changes in qcp_global_utils
+Increased info if $RUN_HORTON_BASE is faulty.

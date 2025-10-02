@@ -9,11 +9,10 @@ class output_files(controller_model):
     __example_values__={}
     # def check existance
 
-from pydantic._internal._model_construction import ModelMetaclass
-class controller_meta(ModelMetaclass):
-    def __init__(self, *args,**kwargs):
-        args,kwargs=self.process_input(*args,**kwargs)
-        super().__init__(**kwargs)
+# from pydantic._internal._model_construction import ModelMetaclass
+# class controller_meta(ModelMetaclass):
+#     def __init__(self, *args,**kwargs):
+#         super().__init__(*args,**kwargs)
 
 class horton_wpart_controller(controller_model):
     method: str
@@ -28,7 +27,6 @@ class horton_wpart_controller(controller_model):
     solver:str='sc'
     #__example_values__={}
     def __init__(self, *args,**kwargs):
-        args,kwargs=self.process_input(*args,**kwargs)
-        super().__init__(**kwargs)
+        super().__init__(*args,**kwargs)
 
         

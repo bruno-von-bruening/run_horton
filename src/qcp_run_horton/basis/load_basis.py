@@ -106,7 +106,8 @@ def get_horton_basis_home() -> directory:
     # Check if basis directory is located below home directory
     basis_subdir='basis'
     basis_path=os.path.join(horton_home, basis_subdir)
-    assert os.path.isdir(basis_path)
+    if not os.path.isdir(basis_path):
+        raise Exception(f"Expected directory to exist (found under environment variable \'${horton_env_name}\')): \'{basis_path}\'")
 
     return basis_path
 
