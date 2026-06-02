@@ -64,7 +64,8 @@ def main(
         rad_grid_dens: int|None = None, # Atomic grid density
         ang_grid_dens: str|None = None, # Atomic grid density
         wfn_file:file|None=None, 
-        execute:bool=True
+        execute:bool=True,
+        take_defaults: bool=True,
 ):
     """ Takes dictionary with all information about the run 
     1. Process and check the information
@@ -73,9 +74,16 @@ def main(
     """
     # In case no input has been provided, print a dummy input file, otherwise read it
 
+    kwargs={}
+    if take_defaults:
+        kwargs.update(
+            method='LISA',
+        )
+
+
+    check_fi=False
     if inp_fi is None:
         print( f"No input file, will work with dummy file options")
-        kwargs={}
         if not method is None: kwargs.update(dict(method=method))
         if not basis is None: kwargs.update(dict(basis=basis))
         if not wfn_file is None: kwargs.update(dict(wfn_file=wfn_file))
@@ -84,11 +92,18 @@ def main(
         dummy_controller=horton_wpart_controller(**horton_wpart_controller.example(**kwargs))
         inp_fi=dummy_controller.write()
         print(f"Wrote input file to {inp_fi}")
+    else:
+        check_fi=True
+
+    if check_fi or execute:
+        try:
+            controller=horton_wpart_controller(inp_fi)
+            print(f"Successfully parsed input file: {inp_fi}")
+        except Exception as ex: 
+            raise Exception(f"Cannot parse input from the provided file: {inp_fi}\n{ex}")
 
     if not execute:
         return None
-    controller=horton_wpart_controller(inp_fi)
-    print(controller)
 
 
 

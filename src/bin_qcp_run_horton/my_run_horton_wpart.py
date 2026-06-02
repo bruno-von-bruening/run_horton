@@ -11,7 +11,8 @@ ang_grid_flag='ang_grid_dens'
 
 def parser():
     # ARGPARSE
-    description='DESCRIPTION:\nThis script runs partitioning according to the HORTON wpart extension'
+    description='DESCRIPTION:\nThis script runs partitioning according to the HORTON wpart extension.'+ \
+    'If not input file is provided a example input file will be printed. If excution is requested (see flag below) then defaults will be chosen'
     epilog=f"RUN INSTRUCTION:\nJust get a dummy input file by running:\n\t{__file__}\nChange the dummy input file and run\n\t"
     f"{__file__} -inp <*.inp>"
     import argparse
@@ -20,7 +21,7 @@ def parser():
     )
     # Add the arguments
     addar=par.add_argument
-    addar('--inp', help='Input file (a default input file will be generated if function is run without options)')
+    addar('inp', nargs='?', help='Input file (a default input file will be generated if function is run without options)')
     addar('--method', help=f"Partitioning method", default=None, choices=['MBIS','LISA'])
     addar('--basis', help=f"Partitioning method", default=None)
     addar('--wfn', type=str, help=f"Wave Function file")
@@ -42,9 +43,13 @@ def parser():
     ang_grid_dens=get_args(ang_grid_flag)
     wfn_file=args.wfn
 
+    kwargs={}
+    kwargs.update( take_defaults= (execute and inp_fi is None))
+
+
     main(inp_fi, method=method, basis=basis,
         rad_grid_dens=rad_grid_dens, ang_grid_dens=ang_grid_dens,
-         wfn_file=wfn_file, execute=execute)
+         wfn_file=wfn_file, execute=execute, **kwargs)
     if not execute:
         print(f"Execution flag was not activated. (activate with --{exc_flag})")
 

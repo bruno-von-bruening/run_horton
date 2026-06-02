@@ -32,11 +32,13 @@ def get_subdir(basis_home,basis_type):
         'avqz': 'aug-cc-pVQZ',
     }
     basis_type=basis_type.lower()
-    if not basis_type.lower() in folder_map.keys():
-        raise Exception(f"The requested basis {basis_type.lower()} cannot be found in available directory mapping"
-                +f"{list(folder_map.keys())}")
+    if basis_type.lower() in folder_map.keys():
+        basis_subdir=folder_map[basis_type.lower()]
+        # raise Exception(f"The requested basis {basis_type.lower()} cannot be found in available directory mapping"
+        #         +f"{list(folder_map.keys())}")
+    else:
+        basis_subdir=basis_type
     
-    basis_subdir=folder_map[basis_type]
     basis_dir=os.path.join(basis_home, basis_subdir)
     if not os.path.isdir(basis_dir): raise Exception(f"Not a valid path for final basis directory: {basis_dir}")
     return basis_dir
@@ -88,12 +90,21 @@ def load_camcasp_basis( basis_type, camcasp_path:directory|None=None):
             return basis_mix
 
 
-        if re.match(r'set2-11-avqz',basis_type):
+        sep='_'
+        if re.match(r'set2'+sep,basis_type):
             # Get the basis sets that will contribute
-            mixed_basis=mix_basis(['set2','avqz'])
+            ar=basis_type.split(sep)
+            assert len(ar)==3, f"Excpected three segmenets separated by \'{sep}\', got: {basis_type}"
+
+            first='set2'
+            try:
+                limit=int(ar[1])
+            except Exception as ex: raise Exception(f"Cannot interprete as integer (in key \'{basis_type}\'): {ar[1]}")
+            second=ar[2]
+
+            mixed_basis=mix_basis([first, second])
             united_basis={}
             for atom_type, basis_options in mixed_basis.items():
-                limit=11
                 try:
                     Z=element_symbol_to_nuclear_charge(atom_type)
                 except Exception as ex:

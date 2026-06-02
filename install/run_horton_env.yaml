@@ -17,6 +17,7 @@ dependencies:
      - importlib_resources
      - horton-part@git+https://github.com/LISA-partitioning-method/horton-part@v1.1.6
      - build
+     - pytest
      - pyyaml
      - rdkit
      - git+ssh://git@github.com/bruno-von-bruening/qcp_global_utils.git

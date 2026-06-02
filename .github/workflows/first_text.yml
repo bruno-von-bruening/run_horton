@@ -1,0 +1,52 @@
+name: macOS Python + Conda CI
+
+on:
+  workflow_dispatch:  # manual runs
+    inputs:
+      reason:
+        description: 'Nothing' # This run should take about 4 minutes. OK?'
+        required: false
+  push:
+    #  branches: [ CI_explore_2 ]
+  #pull_request:
+
+
+jobs:
+    test-macos:
+        if: contains(github.event.head_commit.message, '[run-tests]')
+        runs-on: macos-14
+        # env:
+        #   QCPAPI_HOME: ${{ github.workspace }}
+
+        steps:
+          - name: Checkout repo
+            uses: actions/checkout@v4
+            with:
+              fetch-depth: 1
+
+          - name: Build env files with HTTPS + PAT for CI
+            shell: bash
+            run: |
+              sed 's#git+ssh://git@github.com/#git+https://github.com/#g' install/run_horton_env.yaml > install/run_horton_env_ci.yaml
+
+          - name: Authenticate git for private dependencies
+            shell: bash
+            run: |
+              git config --global url."https://${{ secrets.GH_PAT }}:@github.com/".insteadOf "https://github.com/"
+
+          - name: Install Miniconda
+            uses: conda-incubator/setup-miniconda@v3
+            with:
+              auto-update-conda: true
+              activate-environment: qcpAPI
+              environment-file: install/qcpAPI_env_ci.yaml
+
+          - name: Install qcpAPI package into environment
+            shell: bash -el {0}
+            run: pip install .
+
+
+          - name: Run test script
+            shell: bash -el {0}
+            run: |
+              pytest

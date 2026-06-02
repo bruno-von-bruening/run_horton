@@ -25,6 +25,9 @@ class horton_wpart_controller(controller_model):
     
     # LinearISAWPart in https://github.com/LISA-partitioning-method/horton-part
     solver:str='sc'
+    __defaults__=dict(
+        method='LISA',
+    )
     #__example_values__={}
     def __init__(self, *args,**kwargs):
         super().__init__(*args,**kwargs)
