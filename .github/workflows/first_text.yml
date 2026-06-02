@@ -38,10 +38,10 @@ jobs:
             uses: conda-incubator/setup-miniconda@v3
             with:
               auto-update-conda: true
-              activate-environment: qcpAPI
-              environment-file: install/qcpAPI_env_ci.yaml
+              activate-environment: run_horton
+              environment-file: install/run_horton_env_ci.yaml
 
-          - name: Install qcpAPI package into environment
+          - name: Install run_horton package into environment
             shell: bash -el {0}
             run: pip install .
 
