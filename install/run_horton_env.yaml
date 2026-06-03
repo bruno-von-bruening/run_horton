@@ -7,19 +7,18 @@ dependencies:
   - pydantic
   - numpy
   - pip:
-     - scipy<=1.10.1
-     - quadprog==0.1.11
-     - cvxopt==1.3.1
-     - qpsolvers
-     - qc-grid@git+https://github.com/yingxingcheng/grid
-     - qc-iodata@git+https://github.com/yingxingcheng/iodata
-     - gbasis@git+https://github.com/yingxingcheng/gbasis
-     - importlib_resources
-     - horton-part@git+https://github.com/LISA-partitioning-method/horton-part@v1.1.6
-     - build
-     - pytest
-     - pyyaml
-     - rdkit
-     - git+ssh://git@github.com/bruno-von-bruening/qcp_global_utils.git
-     - git+ssh://git@github.com/bruno-von-bruening/qcp_objects.git
-
+    - scipy<=1.10.1
+    - quadprog==0.1.11
+    - cvxopt==1.3.1
+    - qpsolvers
+    - qc-grid@git+https://github.com/yingxingcheng/grid
+    - qc-iodata@git+https://github.com/yingxingcheng/iodata
+    - gbasis@git+https://github.com/yingxingcheng/gbasis
+    - importlib_resources
+    - horton-part@git+https://github.com/LISA-partitioning-method/horton-part@v1.1.6
+    - build
+    - pytest
+    - pyyaml
+    - rdkit
+    - git+ssh://git@github.com/bruno-von-bruening/qcp_global_utils.git@10e3955ee
+    - git+ssh://git@github.com/bruno-von-bruening/qcp_objects.git@d32cfc3db

@@ -9,7 +9,6 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 
-# Run scripts that will be available in PATH when conda environment is activated
-[project.scripts]
-"run_horton_wpart.py" = "bin_qcp_run_horton:my_run_horton_wpart.parser"
-"generate_basis.py" = "bin_qcp_run_horton:generate_basis.parser"
+# [project.scripts]
+[tool.setuptools]
+script-files = ["bin/run_horton_wpart.py", 'bin/qcp_export_envo.py']
