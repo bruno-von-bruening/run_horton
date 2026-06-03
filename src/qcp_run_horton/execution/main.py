@@ -121,7 +121,7 @@ def main(
             wfn_fi=process_mp2_and_cc_file(wfn_fi)
             return wfn_fi
 
-        wfn_fi_tmp=temporary_file(controller.wfn_file)
+        wfn_fi_tmp=temporary_file(controller.wfn_file, copy=True)
         # if mp2 or cc I need to change
         controller.wfn_file=transfrom_fchk_file(wfn_fi_tmp.file)
 
