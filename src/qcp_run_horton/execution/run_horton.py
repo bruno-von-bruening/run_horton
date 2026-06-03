@@ -315,6 +315,12 @@ def exc_partition(mol, grid, rho, method:str, basis=None, solver=None):
 def run_horton(controller, wfn_fi, method, basis, solver=None, ang_grid_dens=None):
     """ Run horton for the provided input """
     # Setup the calculation
+    ## if not ang_grid_dens is None:
+    ##     try:
+    ##         ang_grid_dens=int(ang_grid_dens)
+    ##     except Exception as ex:
+    ##         raise ValueError(f"Could not cast angular grid density to integer: {ang_grid_dens}: {ex}")
+
     mol, grid, rho = prepare_grid_and_dens(wfn_fi, ang_grid_dens=ang_grid_dens)
 
     # Execute Partitioning and save results

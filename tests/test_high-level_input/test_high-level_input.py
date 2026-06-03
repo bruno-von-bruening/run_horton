@@ -23,11 +23,12 @@ def check(the_script: callable, inp, *args, **kwargs):
     results=the_script(inp,*args,**kwargs)
     assert results.returncode==0, f"Process failed\n  STOUD={results.stdout}\n  STDERR={results.stderr.decode()}"
 
-run=partial(run_script,env='run_horton')
+envo='run_horton'
+run=partial(run_script,env=envo)
 check_runner=partial(check, run)
 
 def test_envo():
-    check(run, f"conda run -n run_horton python -c \"import qcp_run_horton\"")
+    check(run, f"conda run -n {envo} python -c \"import qcp_run_horton\"")
 
 def test_simple_run():
     """ Fixed defaults etc"""
@@ -37,4 +38,4 @@ def test_simple_run():
     assert os.path.isdir(loc), f"Not a directory: {loc}"
     assert os.path.isfile(wfn_file), f"wfn provided is not file: {wfn}"
     cmd=f"run_horton_wpart.py --exc --wfn {wfn_file}"
-    check(run, f"conda run -n run_horton {cmd}", cwd=loc)
+    check(run, f"conda run -n {envo} {cmd}", cwd=loc)
