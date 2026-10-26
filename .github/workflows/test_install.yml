@@ -13,9 +13,10 @@ on:
 
 jobs:
     test-macos:
+        # If run manually or If new push that contains run keyword
         if: >-
-          github.event_name == 'workflow_dispatch' ||  # If run manually
-          contains(github.event.head_commit.message, '[run-ci-tests]') # If new push that contains run keyword
+          github.event_name == 'workflow_dispatch' ||  
+          contains(github.event.head_commit.message, '[run-ci-tests]') 
 
         runs-on: macos-14
         # env:
